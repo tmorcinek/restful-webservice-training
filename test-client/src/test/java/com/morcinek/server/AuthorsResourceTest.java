@@ -1,6 +1,7 @@
 package com.morcinek.server;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.net.URI;
 
@@ -16,6 +17,7 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.sun.jersey.api.representation.Form;
 
 public class AuthorsResourceTest {
 
@@ -89,5 +91,21 @@ public class AuthorsResourceTest {
 		assertEquals(new Integer(valueBefore), Integer.valueOf(response.getEntity(String.class)));
 	}
 
-	
+	@Test
+	public void testForm() {
+		Form form = new Form();
+		form.add("id", "5");
+		form.add("name", "Tomasz Morcinek");
+		form.add("content", "Demonstration of the client lib for forms");
+		ClientResponse response = service.path("rest").path("notes-res").type(MediaType.APPLICATION_FORM_URLENCODED)
+				.post(ClientResponse.class, form);
+		System.out.println(response);
+		response = service.path("rest").path("notes-res").path("5").accept(MediaType.APPLICATION_JSON)
+				.get(ClientResponse.class);
+		response = service.path("rest").path("notes-res").path("5").accept(MediaType.TEXT_XML)
+				.get(ClientResponse.class);
+		Note entity = response.getEntity(Note.class);
+		assertNotNull(entity);
+	}
+
 }

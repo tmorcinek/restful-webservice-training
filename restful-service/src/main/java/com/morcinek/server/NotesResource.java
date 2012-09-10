@@ -1,9 +1,14 @@
 package com.morcinek.server;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -44,4 +49,16 @@ public class NotesResource {
 	public NoteResource getNote(@PathParam("note") String id) {
 		return new NoteResource(uriInfo, request, id);
 	}
+
+	@POST
+	@Produces(MediaType.TEXT_HTML)
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public void newNote(@FormParam("id") String id, @FormParam("name") String name,
+			@FormParam("content") String content, @Context HttpServletResponse servletResponse) throws IOException {
+		Note note = new Note(id);
+		note.setName(name);
+		note.setContent(content);
+		NotesDao.getInstance().put(note);
+	}
+
 }
